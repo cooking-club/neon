@@ -15,10 +15,8 @@ export const scheduleRouter = createTRPCRouter({
     .input(z.object({ group: z.number(), date: z.number() }))
     .query(async ({ctx, input}) => {
         const resp = await fetch(`${env.RECIPES_API_URL}?g=${input.group}&d=${input.date}`)
-        if (resp.ok) return {
-            error: await resp.text()
-        }
+        if (!resp.ok) return []
         const data = await resp.json()
-        return data as ScheduleRecord[]
+        return data as ScheduleRecord[][]
     })
 })
