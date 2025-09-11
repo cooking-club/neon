@@ -35,7 +35,7 @@ export function Post({ text, author, createdAt, attachments }: PostProps) {
 	return (
 		<div className="mt-3 px-3">
 			<div className="flex gap-2">
-				<Avatar className="size-12 h-fit">
+				<Avatar className="size-12">
 					{/* <AvatarImage src={author.avatarURL} /> */}
 					<AvatarFallback>
 						{author
