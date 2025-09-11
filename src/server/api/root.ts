@@ -9,7 +9,7 @@ import { scheduleRouter } from "./routers/schedule";
  */
 export const appRouter = createTRPCRouter({
 	post: postRouter,
-	schedule: scheduleRouter
+	schedule: scheduleRouter,
 });
 
 // export type definition of API

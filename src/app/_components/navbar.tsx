@@ -5,8 +5,8 @@ import {
 	SearchIcon,
 	UserIcon,
 } from "lucide-react";
-import type { ReactElement } from "react";
 import Link from "next/link";
+import type { ReactElement } from "react";
 
 const navItems = [
 	{ label: "Search", icon: <SearchIcon />, link: "#" },

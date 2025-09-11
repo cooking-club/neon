@@ -3,9 +3,9 @@
 import dayjs, { type Dayjs } from "dayjs";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
-import { api } from "~/trpc/react";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { api } from "~/trpc/react";
 
 type RecordType = {
 	timestamp: string;

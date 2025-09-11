@@ -4,9 +4,9 @@ export function Header() {
 	const filters = ["All", "Clubs", "Users", "News", "Follows"];
 
 	return (
-		<div className="sticky border-b pb-2 top-0 bg-background z-10">
-			<div className="flex justify-center mb-2">
-				<h1 className="text-4xl font-black">neon</h1>
+		<div className="sticky top-0 z-10 border-b bg-background pb-2">
+			<div className="mb-2 flex justify-center">
+				<h1 className="font-black text-4xl">neon</h1>
 			</div>
 			<NavMenu chips={filters} />
 		</div>
