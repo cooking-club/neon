@@ -32,7 +32,8 @@ model Post {
     createdAt DateTime
     updatedAt DateTime?
 
-    author String
+    author      String
+    attachments String? @db.Text
 }
 
 // Necessary for Next auth

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { Avatar, AvatarFallback } from "~/components/ui/avatar";
+import clsx from "clsx";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
-import clsx from "clsx";
+import { useState } from "react";
+import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 
 dayjs.extend(relativeTime);
 
@@ -13,6 +13,7 @@ interface PostProps {
 	text: string;
 	author: string;
 	createdAt: Date;
+	attachments: string | null; // todo: add media types
 }
 
 const defaultReaction: ReactionProps[] = [
@@ -28,13 +29,13 @@ const defaultReaction: ReactionProps[] = [
 	{ initCount: 0, icon: "/eggplant.png", alt: "Eggplant emoji" },
 ];
 
-export function Post({ text, author, createdAt }: PostProps) {
+export function Post({ text, author, createdAt, attachments }: PostProps) {
 	const [imgOpen, setImgOpen] = useState(false);
 
 	return (
-		<div className="px-3 mt-3">
+		<div className="mt-3 px-3">
 			<div className="flex gap-2">
-				<Avatar className="h-fit size-12">
+				<Avatar className="size-12 h-fit">
 					{/* <AvatarImage src={author.avatarURL} /> */}
 					<AvatarFallback>
 						{author
@@ -44,38 +45,38 @@ export function Post({ text, author, createdAt }: PostProps) {
 					</AvatarFallback>
 				</Avatar>
 				<div className="">
-					<h3 className="text-xl font-semibold tracking-tight">{author}</h3>
+					<h3 className="font-semibold text-xl tracking-tight">{author}</h3>
 					<p className="text-muted-foreground text-sm">
 						{dayjs().to(createdAt)}
 					</p>
 				</div>
 			</div>
 			<p className="my-2 line-clamp-3">{text}</p>
-			{/* {attachments ?? (
-        <div
-          className={clsx(
-            "aspect-square rounded bg-center bg-cover",
-            post.attachments ?? "hidden"
-          )}
-          style={{ backgroundImage: `url(${post.attachments?.[0]})` }}
-          onClick={() => setImgOpen(true)}
-        />
-      )} */}
-			<div className="flex items-center gap-x-2 gap-y-2 overflow-y-hidden flex-wrap mt-2">
+			{attachments ? (
+				<>
+					<div
+						className="aspect-square rounded bg-center bg-cover"
+						style={{ backgroundImage: `url(${attachments})` }}
+						onClick={() => setImgOpen(true)}
+						onKeyDown={() => setImgOpen(true)}
+					/>
+					{imgOpen && (
+						<div
+							className="fixed top-0 left-0 z-10 grid h-screen w-screen items-center bg-background-overlay"
+							onClick={() => setImgOpen(false)}
+							onKeyDown={() => setImgOpen(false)}
+						>
+							<img className="" src={attachments} alt="" />
+						</div>
+					)}
+				</>
+			) : null}
+			<div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-2 overflow-y-hidden">
 				{defaultReaction.map((item, idx) => (
 					<Reaction {...item} key={idx} />
 				))}
 			</div>
 			<hr className="my-4" />
-			{imgOpen && (
-				<div
-					className="fixed top-0 left-0 z-10 grid h-screen w-screen items-center bg-background-overlay"
-					onClick={() => setImgOpen(false)}
-					onKeyDown={() => setImgOpen(false)}
-				>
-					{/* <img className="" src={attachments?.[0]} /> */}
-				</div>
-			)}
 		</div>
 	);
 }
