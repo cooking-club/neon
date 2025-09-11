@@ -2,6 +2,7 @@ import path from "node:path";
 import { Readable } from "node:stream";
 import type { ReadableStream } from "node:stream/web";
 import { z } from "zod";
+import { env } from "~/env";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
@@ -19,25 +20,14 @@ export const postRouter = createTRPCRouter({
 			let attachments: string | null = null;
 
 			if (input.attachments?.[0] !== undefined) {
-				const bucket = "test"; // TODO: replace with actual author id
-				const exists = await ctx.files.bucketExists(bucket);
-				if (exists) {
-					console.log(`Bucket ${bucket} exists.`);
-				} else {
-					await ctx.files.makeBucket(bucket);
-					console.log(`Bucket ${bucket} created.`);
-				}
-
 				const fileURL = input.attachments[0];
 				const fileRes = await fetch(fileURL);
 				const buffer = Readable.fromWeb(fileRes.body as ReadableStream); // fix with ReadableStream
 
-				const fileName = `${input.timestamp}-${path.basename(fileURL)}`;
+				const fileName = `${input.author.replace(" ", "-")}/${input.timestamp}-${path.basename(fileURL)}`; // todo: replace author with id
 
-				const objInfo = await ctx.files.putObject(bucket, fileName, buffer, 10);
-				const url = await ctx.files.presignedGetObject(bucket, fileName);
-				console.log("new object:", objInfo);
-				attachments = url;
+				await ctx.files.putObject(env.MINIO_PUBLIC_BUCKET, fileName, buffer); // todo: add meta data
+				attachments = `http://${env.MINIO_ENDPOINT}:${env.MINIO_PORT}/${env.MINIO_PUBLIC_BUCKET}/${fileName}`; // todo: remake this part without relaying on host/port thing
 			}
 
 			return ctx.db.post.create({
