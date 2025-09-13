@@ -40,14 +40,15 @@ export const postRouter = createTRPCRouter({
 			});
 		}),
 
-	get: publicProcedure.input(z.object({ limit: z.number(), skip: z.number() }))
-	.query(async ({ ctx, input }) => {
-		const posts = await ctx.db.post.findMany({
-			orderBy: { createdAt: "desc" },
-			take: input.limit,
-			skip: input.skip
-		});
+	get: publicProcedure
+		.input(z.object({ limit: z.number(), skip: z.number() }))
+		.query(async ({ ctx, input }) => {
+			const posts = await ctx.db.post.findMany({
+				orderBy: { id: "desc" },
+				take: input.limit,
+				skip: input.skip,
+			});
 
-		return posts;
-	}),
+			return posts;
+		}),
 });
