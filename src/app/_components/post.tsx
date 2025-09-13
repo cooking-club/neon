@@ -1,11 +1,18 @@
 "use client";
 
-import clsx from "clsx";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { SmilePlus } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
+import { Button } from "~/components/ui/button";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "~/components/ui/popover";
+import { cn } from "~/lib/utils";
 
 dayjs.extend(relativeTime);
 
@@ -16,24 +23,60 @@ interface PostProps {
 	attachments: string | null; // todo: add media types
 }
 
-const defaultReaction: ReactionProps[] = [
-	{ initCount: 0, icon: "/grinning.png", alt: "Grinning emoji" },
-	{ initCount: 0, icon: "/fire.png", alt: "Fire emoji" },
-	{ initCount: 0, icon: "/heart.png", alt: "Heart emoji" },
+type ReactionInfoType = {
+	icon: string;
+	alt: string;
+};
+
+const defaultReactions: ReactionInfoType[] = [
+	{ icon: "/grinning.png", alt: "Grinning emoji" },
+	{ icon: "/fire.png", alt: "Fire emoji" },
+	{ icon: "/heart.png", alt: "Heart emoji" },
 	{
-		initCount: 0,
 		icon: "/smiling_with_tear.png",
 		alt: "Smilling face with tears emoji",
 	},
-	{ initCount: 0, icon: "/peach.png", alt: "Peach emoji" },
-	{ initCount: 0, icon: "/eggplant.png", alt: "Eggplant emoji" },
+	{ icon: "/peach.png", alt: "Peach emoji" },
+	{ icon: "/eggplant.png", alt: "Eggplant emoji" },
 ];
+
+type ReactionItemType = {
+	id: number;
+	count: number;
+	active: boolean;
+};
 
 export function Post({ text, author, createdAt, attachments }: PostProps) {
 	const [imgOpen, setImgOpen] = useState(false);
+	const [reactions, setReactions] = useState<ReactionItemType[]>([]);
+
+	const available = useMemo(
+		() =>
+			defaultReactions
+				.map((_, idx) => idx)
+				.filter((id) => !reactions.some((v) => v.id === id)),
+		[reactions],
+	);
+
+	const addReaction = (id: number) =>
+		setReactions((r) => [...r, { id: id, count: 1, active: true }]);
+
+	const updReaction = (id: number) => {
+		setReactions((r) =>
+			r.map((item) =>
+				item.id === id
+					? {
+							id: item.id,
+							count: item.count + (item.active ? -1 : 1),
+							active: !item.active,
+						}
+					: item,
+			),
+		);
+	};
 
 	return (
-		<div className="mt-3 px-3">
+		<div className="mx-3 mt-3 rounded-xl border px-3 py-3">
 			<div className="flex gap-2">
 				<Avatar className="size-12">
 					{/* <AvatarImage src={author.avatarURL} /> */}
@@ -72,37 +115,82 @@ export function Post({ text, author, createdAt, attachments }: PostProps) {
 				</>
 			) : null}
 			<div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-2 overflow-y-hidden">
-				{defaultReaction.map((item, idx) => (
-					<Reaction {...item} key={idx} />
+				{reactions.map((item, idx) => (
+					<Reaction
+						{...item}
+						key={item.id}
+						incCount={() => updReaction(item.id)}
+					/>
 				))}
+				{reactions.length !== defaultReactions.length && (
+					<AddReactionButton addReaction={addReaction} available={available} />
+				)}
 			</div>
-			<hr className="my-4" />
 		</div>
 	);
 }
 
 interface ReactionProps {
-	initCount: number;
-	icon: string;
-	alt: string;
+	active: boolean;
+	count: number;
+	id: number;
+	incCount(): void;
 }
 
-function Reaction({ initCount, icon, alt }: ReactionProps) {
-	const [count, setCount] = useState(initCount);
-
+function Reaction({ active, count, incCount, id }: ReactionProps) {
+	console.log("active", active, id);
 	return (
 		<button
 			type="button"
-			className={clsx(
-				"flex items-center gap-2 rounded-full border bg-background px-4 py-2 leading-none hover:bg-accent",
-				count === 0 && "opacity-60",
+			className={cn(
+				"flex items-center gap-2 rounded-full border bg-background px-4 py-2 leading-none",
+				active && "bg-accent",
 			)}
-			onClick={() => setCount((c) => c + Math.ceil(Math.random() * 1))}
+			onClick={() => incCount()}
 		>
-			<Image src={icon} alt={alt} width={20} height={20} />
+			<Image
+				src={defaultReactions[id]!.icon}
+				alt={defaultReactions[id]!.alt}
+				width={20}
+				height={20}
+			/>
 			<span className="tabular-nums">
 				{count >= 1000 ? `${(count / 1000).toFixed(1)}K` : count}
 			</span>
 		</button>
+	);
+}
+
+interface AddReactionButtonProps {
+	addReaction(id: number): void;
+	available: number[];
+}
+
+function AddReactionButton({ addReaction, available }: AddReactionButtonProps) {
+	return (
+		<Popover>
+			<PopoverTrigger asChild>
+				<Button variant="ghost" size="icon">
+					<SmilePlus />
+				</Button>
+			</PopoverTrigger>
+			<PopoverContent className="w-fit">
+				{available.map((id) => (
+					<Button
+						key={id}
+						onClick={() => addReaction(id)}
+						variant="ghost"
+						size="icon"
+					>
+						<Image
+							src={defaultReactions[id]!.icon}
+							alt={defaultReactions[id]!.alt}
+							width={20}
+							height={20}
+						/>
+					</Button>
+				))}
+			</PopoverContent>
+		</Popover>
 	);
 }
