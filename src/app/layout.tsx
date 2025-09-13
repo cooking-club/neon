@@ -5,6 +5,7 @@ import { Geist } from "next/font/google";
 
 import { NavBar } from "~/app/_components/navbar";
 import { TRPCReactProvider } from "~/trpc/react";
+import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
 	title: "Neon 0.1",
@@ -21,14 +22,21 @@ export default function RootLayout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
-		<html lang="en" className={`${geist.variable}`}>
+		<html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
 			<body>
-				<div className="bg-background text-foreground">
-					<TRPCReactProvider>
-						{children}
-						<NavBar />
-					</TRPCReactProvider>
-				</div>
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="system"
+					enableSystem
+					disableTransitionOnChange
+				>
+					<div className="bg-background text-foreground">
+						<TRPCReactProvider>
+							{children}
+							<NavBar />
+						</TRPCReactProvider>
+					</div>
+				</ThemeProvider>
 			</body>
 		</html>
 	);
