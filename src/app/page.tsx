@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Header } from "~/app/_components/header";
 import { Post } from "~/app/_components/post";
+import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
@@ -61,7 +62,18 @@ export default function Feed() {
 	return (
 		<>
 			<Header />
-			<main className="pb-10">
+			<main
+				className={cn(
+					"pb-10",
+					posts.length === 0 && "h-[80vh] overflow-hidden",
+				)}
+			>
+				{posts.length === 0 && (
+					<>
+						<PostSkeleton />
+						<PostSkeleton />
+					</>
+				)}
 				{posts.map((item) => (
 					<Post {...item} key={item.id} />
 				))}
@@ -73,5 +85,22 @@ export default function Feed() {
 				</p>
 			</main>
 		</>
+	);
+}
+
+function PostSkeleton() {
+	return (
+		<div className="mx-3 mt-3 px-3 py-3">
+			<div className="flex items-center gap-2">
+				<Skeleton className="size-12 rounded-full" />
+				<div className="space-y-2">
+					<Skeleton className="h-5 w-40" />
+					<Skeleton className="h-3 w-20" />
+				</div>
+			</div>
+			<Skeleton className="my-2 h-3 w-full" />
+			<Skeleton className="my-2 h-3 w-1/3" />
+			<Skeleton className="aspect-video w-full" />
+		</div>
 	);
 }
