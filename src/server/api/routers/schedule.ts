@@ -12,7 +12,7 @@ interface ScheduleRecord {
 
 export const scheduleRouter = createTRPCRouter({
 	get: publicProcedure
-		.input(z.object({ group: z.number(), date: z.number() }))
+		.input(z.object({ group: z.string(), date: z.number() }))
 		.query(async ({ ctx, input }) => {
 			const resp = await fetch(
 				`${env.RECIPES_API_URL}?g=${input.group}&d=${input.date}`,
