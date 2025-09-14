@@ -5,6 +5,15 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+	SelectValue,
+} from "~/components/ui/select";
 import { api } from "~/trpc/react";
 
 type RecordType = {
@@ -22,9 +31,10 @@ type DayType = {
 
 export default function Schedule() {
 	const [currentDate, setDate] = useState<Dayjs>(dayjs());
+	const [group, setGroup] = useState("2-44-0");
 	const query = api.schedule.get.useQuery({
 		date: currentDate.unix(),
-		group: 2440,
+		group: group,
 	});
 
 	const currentWeek = dayjs().diff("2025-09-01", "weeks");
@@ -35,9 +45,13 @@ export default function Schedule() {
 
 	return (
 		<div className="px-2 pb-7 tabular-nums">
-			<h2 className="border-b py-5 text-center font-bold text-2xl">
-				Schedule for today
-			</h2>
+			<div className="flex justify-between border-b px-5 py-5">
+				<h2 className="font-bold text-2xl">Schedule</h2>
+				<GroupSelector
+					defaultValue={group}
+					setGroup={(v: string) => setGroup(v)}
+				/>
+			</div>
 			<div className="mt-3 flex w-full items-center justify-between">
 				<Button
 					size="icon"
@@ -114,5 +128,32 @@ function Record({ timestamp, subject, professor, room }: RecordType) {
 				</p>
 			</div>
 		</div>
+	);
+}
+
+interface GroupSelectorProps {
+	defaultValue: string;
+	setGroup(v: string): void;
+}
+
+function GroupSelector({ defaultValue, setGroup }: GroupSelectorProps) {
+	return (
+		<Select defaultValue={defaultValue} onValueChange={setGroup}>
+			<SelectTrigger>
+				<SelectValue placeholder={"Select your group"} />
+			</SelectTrigger>
+			<SelectContent>
+				<SelectGroup>
+					<SelectLabel>ИВТФ</SelectLabel>
+					<SelectItem value="2-40-0">2-40</SelectItem>
+					<SelectItem value="2-44-0">2-44 x</SelectItem>
+					<SelectItem value="2-44-1">2-44 xx</SelectItem>
+				</SelectGroup>
+				<SelectGroup>
+					<SelectLabel>ЭМФ</SelectLabel>
+					<SelectItem value="2-31-0">2-31</SelectItem>
+				</SelectGroup>
+			</SelectContent>
+		</Select>
 	);
 }
