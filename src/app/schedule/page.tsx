@@ -31,7 +31,7 @@ type DayType = {
 
 export default function Schedule() {
 	const [currentDate, setDate] = useState<Dayjs>(dayjs());
-	const [group, setGroup] = useState("2-44-0");
+	const [group, setGroup] = useState("1");
 	const query = api.schedule.get.useQuery({
 		date: currentDate.unix(),
 		group: group,
@@ -144,22 +144,20 @@ interface GroupSelectorProps {
 }
 
 function GroupSelector({ defaultValue, setGroup }: GroupSelectorProps) {
+	const query = api.schedule.getGroups.useQuery();
+
 	return (
 		<Select defaultValue={defaultValue} onValueChange={setGroup}>
 			<SelectTrigger>
 				<SelectValue placeholder={"Select your group"} />
 			</SelectTrigger>
 			<SelectContent>
-				<SelectGroup>
-					<SelectLabel>ИВТФ</SelectLabel>
-					<SelectItem value="2-40-0">2-40</SelectItem>
-					<SelectItem value="2-44-0">2-44 x</SelectItem>
-					<SelectItem value="2-44-1">2-44 xx</SelectItem>
-				</SelectGroup>
-				<SelectGroup>
-					<SelectLabel>ЭМФ</SelectLabel>
-					<SelectItem value="2-31-0">2-31</SelectItem>
-				</SelectGroup>
+				{query.isSuccess &&
+					query.data.map((item) => (
+						<SelectItem value={item.id.toString()} key={item.id}>
+							{item.label}
+						</SelectItem>
+					))}
 			</SelectContent>
 		</Select>
 	);
