@@ -44,7 +44,7 @@ export default function Schedule() {
 	};
 
 	return (
-		<div className="px-2 pb-7 tabular-nums">
+		<div className="px-3 pb-7 tabular-nums">
 			<div className="flex justify-between border-b px-5 py-5">
 				<h2 className="font-bold text-2xl">Schedule</h2>
 				<GroupSelector
@@ -118,9 +118,16 @@ function Day({ date, records }: DayType) {
 }
 
 function Record({ timestamp, subject, professor, room }: RecordType) {
+	const [h = 0, m = 0] = timestamp.split(":");
+
 	return (
 		<div className="mb-4 flex gap-4">
-			<span className="font-bold">{timestamp}</span>
+			<div>
+				<span className="font-bold">{timestamp}</span>
+				<p className="text-end font-bold text-muted-foreground text-xs">
+					{dayjs().hour(+h).minute(+m).add(95, "minutes").format("HH:mm")}
+				</p>
+			</div>
 			<div className="">
 				<p className="font-black text-xl">{subject}</p>
 				<p className="text-muted-foreground italic">
