@@ -14,6 +14,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "~/components/ui/select";
+import { Skeleton } from "~/components/ui/skeleton";
+import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
 export default function Schedule() {
@@ -31,7 +33,12 @@ export default function Schedule() {
 	};
 
 	return (
-		<div className="px-3 pb-7 tabular-nums">
+		<div
+			className={cn(
+				"px-3 pb-7 tabular-nums",
+				query.isFetching && "h-[99vh] overflow-hidden",
+			)}
+		>
 			<div className="flex justify-between border-b px-5 py-5">
 				<h2 className="font-bold text-2xl">Schedule</h2>
 				<GroupSelector
@@ -83,7 +90,12 @@ export default function Schedule() {
 						/>
 					))}
 				</div>
-			) : null}
+			) : (
+				<div className="mt-3 space-y-3">
+					<DaySkeleton />
+					<DaySkeleton />
+				</div>
+			)}
 			<p className="text-center text-muted-foreground">this is the end c:</p>
 		</div>
 	);
@@ -164,4 +176,8 @@ function GroupSelector({ defaultValue, setGroup }: GroupSelectorProps) {
 			</SelectContent>
 		</Select>
 	);
+}
+
+function DaySkeleton() {
+	return <Skeleton className="aspect-square w-full" />;
 }
