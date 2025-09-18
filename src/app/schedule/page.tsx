@@ -156,6 +156,8 @@ function GroupSelector({ defaultValue, setGroup }: GroupSelectorProps) {
 		}
 	}
 
+	if (query.isLoading) return <Skeleton className="h-9 w-24" />;
+
 	return (
 		<Select defaultValue={defaultValue} onValueChange={setGroup}>
 			<SelectTrigger>
