@@ -35,7 +35,17 @@ interface ScheduleProfessor {
 interface ScheduleGroup {
 	id: number;
 	label: string;
-	faculty: string;
+	startYear: number;
+	number: number;
+	subgroup: number;
+	departmentId: number;
+	department: {
+		id: number;
+		shortName: string;
+		fullName: string;
+		faculty: string;
+	};
+	records: object | null;
 }
 
 export const scheduleRouter = createTRPCRouter({
@@ -78,7 +88,14 @@ export const scheduleRouter = createTRPCRouter({
 	getGroups: publicProcedure.query(async ({ ctx }) => {
 		const resp = await fetch(`${env.RECIPES_API_URL}/groups/`);
 		if (!resp.ok) return [];
-		const data = await resp.json();
-		return data as ScheduleGroup[];
+		const data = (await resp.json()) as ScheduleGroup[];
+
+		const groups: GroupType[] = data.map((item) => ({
+			id: item.id,
+			faculty: item.department.faculty,
+			label: `${(dayjs().year() - item.startYear + 1) % 10}-${item.number}${"x".repeat(item.subgroup + 1)}`, // TODO: change to item.label after api update
+		}));
+
+		return groups;
 	}),
 });

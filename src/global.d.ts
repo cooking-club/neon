@@ -10,3 +10,9 @@ type DayType = {
 	date: string;
 	records: RecordType[];
 };
+
+type GroupType = {
+	id: number;
+	label: string;
+	faculty: string;
+};
