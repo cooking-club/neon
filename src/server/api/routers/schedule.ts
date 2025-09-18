@@ -73,10 +73,13 @@ export const scheduleRouter = createTRPCRouter({
 					room: item.room.label,
 					subject: item.label,
 					timestamp: (intradayPos > 2
-						? dayjs().hour(8).minute(0)
-						: dayjs().hour(14).minute(0)
+						? dayjs().hour(14).minute(0)
+						: dayjs().hour(8).minute(0)
 					)
-						.add(110, "minutes")
+						.add(
+							110 * (intradayPos > 2 ? intradayPos - 3 : intradayPos),
+							"minutes",
+						)
 						.format("HH:mm"),
 				};
 
