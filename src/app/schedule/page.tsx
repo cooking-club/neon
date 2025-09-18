@@ -18,7 +18,7 @@ import { api } from "~/trpc/react";
 
 export default function Schedule() {
 	const [currentDate, setDate] = useState<Dayjs>(dayjs());
-	const [group, setGroup] = useState("1");
+	const [group, setGroup] = useState<string>("1");
 	const query = api.schedule.get.useQuery({
 		date: currentDate.unix(),
 		group: group,
@@ -133,6 +133,17 @@ interface GroupSelectorProps {
 function GroupSelector({ defaultValue, setGroup }: GroupSelectorProps) {
 	const query = api.schedule.getGroups.useQuery();
 
+	const groups: Record<string, Omit<GroupType, "faculty">[]> = {};
+	if (query.isSuccess) {
+		for (const item of query.data) {
+			if (groups[item.faculty] === undefined) groups[item.faculty] = [];
+			groups[item.faculty]?.push({
+				id: item.id,
+				label: item.label,
+			});
+		}
+	}
+
 	return (
 		<Select defaultValue={defaultValue} onValueChange={setGroup}>
 			<SelectTrigger>
@@ -140,10 +151,15 @@ function GroupSelector({ defaultValue, setGroup }: GroupSelectorProps) {
 			</SelectTrigger>
 			<SelectContent>
 				{query.isSuccess &&
-					query.data.map((item) => (
-						<SelectItem value={item.id.toString()} key={item.id}>
-							{item.label}
-						</SelectItem>
+					Object.entries(groups).map(([faculty, items]) => (
+						<SelectGroup key={faculty}>
+							<SelectLabel>{faculty}</SelectLabel>
+							{items.map((item) => (
+								<SelectItem value={item.id.toString()} key={item.id}>
+									{item.label}
+								</SelectItem>
+							))}
+						</SelectGroup>
 					))}
 			</SelectContent>
 		</Select>
