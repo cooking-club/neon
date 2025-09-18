@@ -1,13 +1,35 @@
+import dayjs from "dayjs";
 import { z } from "zod";
 import { env } from "~/env";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 interface ScheduleRecord {
-	timestamp: string;
-	subject: string;
-	professor: string;
-	room: string;
+	id: number;
+	label: string;
 	kind: string;
+	position: number;
+	professorId: number;
+	roomId: number;
+	professor: ScheduleProfessor;
+	room: ScheduleRoom;
+	groups: object | null;
+}
+
+interface ScheduleRoom {
+	id: number;
+	building: string;
+	floor: number;
+	number: number;
+	label: string;
+}
+
+interface ScheduleProfessor {
+	id: number;
+	firstName: string;
+	patronymic: string;
+	surname: string;
+	departmentId: number;
+	department: object;
 }
 
 interface ScheduleGroup {
@@ -24,8 +46,34 @@ export const scheduleRouter = createTRPCRouter({
 				`${env.RECIPES_API_URL}/courses/?g=${input.group}&d=${input.date}`,
 			);
 			if (!resp.ok) return [];
-			const data = await resp.json();
-			return data as ScheduleRecord[][];
+			const data = (await resp.json()) as ScheduleRecord[];
+
+			const records: RecordType[][] = Array.from({ length: 6 }).map(
+				() => new Array(),
+			);
+			for (const item of data) {
+				const inWeek = item.position % 42;
+				const dayNum = Math.floor(inWeek / 7);
+
+				const intradayPos = inWeek % 7;
+
+				const record: RecordType = {
+					kind: item.kind,
+					professor: item.professor.surname, // TODO: requires backend improvements
+					room: item.room.label,
+					subject: item.label,
+					timestamp: (intradayPos > 2
+						? dayjs().hour(8).minute(0)
+						: dayjs().hour(14).minute(0)
+					)
+						.add(110, "minutes")
+						.format("HH:mm"),
+				};
+
+				records[dayNum]!.push(record);
+			}
+
+			return records;
 		}),
 	getGroups: publicProcedure.query(async ({ ctx }) => {
 		const resp = await fetch(`${env.RECIPES_API_URL}/groups/`);
