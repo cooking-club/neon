@@ -16,19 +16,6 @@ import {
 } from "~/components/ui/select";
 import { api } from "~/trpc/react";
 
-type RecordType = {
-	timestamp: string;
-	subject: string;
-	professor: string;
-	room: string;
-	kind: string;
-};
-
-type DayType = {
-	date: string;
-	records: RecordType[];
-};
-
 export default function Schedule() {
 	const [currentDate, setDate] = useState<Dayjs>(dayjs());
 	const [group, setGroup] = useState("1");
