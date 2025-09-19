@@ -174,7 +174,7 @@ function AddReactionButton({ addReaction, available }: AddReactionButtonProps) {
 					<SmilePlus />
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="w-fit">
+			<PopoverContent className="w-fit p-1">
 				{available.map((id) => (
 					<Button
 						key={id}
