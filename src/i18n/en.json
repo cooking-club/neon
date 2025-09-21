@@ -7,5 +7,14 @@
             "news": "News",
             "follows": "Follows"
         }
+    },
+    "Navbar": {
+        "labels": {
+            "search": "Search",
+            "feed": "Feed",
+            "home": "Home",
+            "follows": "Follows",
+            "profile": "Profile"
+        }
     }
 }

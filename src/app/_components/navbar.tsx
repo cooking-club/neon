@@ -5,18 +5,21 @@ import {
 	SearchIcon,
 	UserIcon,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { ReactElement } from "react";
 
-const navItems = [
-	{ label: "Search", icon: <SearchIcon />, link: "#" },
-	{ label: "Feed", icon: <NewspaperIcon />, link: "/" },
-	{ label: "Home", icon: <HomeIcon />, link: "/home" },
-	{ label: "Follows", icon: <RssIcon />, link: "#" },
-	{ label: "Profile", icon: <UserIcon />, link: "#" },
-];
-
 export function NavBar() {
+	const t = useTranslations("Navbar");
+
+	const navItems = [
+		{ label: t("labels.search"), icon: <SearchIcon />, link: "#" },
+		{ label: t("labels.feed"), icon: <NewspaperIcon />, link: "/" },
+		{ label: t("labels.home"), icon: <HomeIcon />, link: "/home" },
+		{ label: t("labels.follows"), icon: <RssIcon />, link: "#" },
+		{ label: t("labels.profile"), icon: <UserIcon />, link: "#" },
+	];
+
 	return (
 		<div className="fixed bottom-0 flex w-screen items-center justify-around border-t bg-background py-2">
 			{navItems.map((item, idx) => (
