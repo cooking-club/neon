@@ -1,0 +1,25 @@
+{
+    "Feed": {
+        "chips": {
+            "all": "Все",
+            "clubs": "Клубы",
+            "users": "Пользователи",
+            "news": "Новости",
+            "follows": "Подписки"
+        }
+    },
+    "Navbar": {
+        "labels": {
+            "search": "Поиск",
+            "feed": "Лента",
+            "home": "Сервисы",
+            "follows": "Сабки",
+            "profile": "Профиль"
+        }
+    },
+    "Schedule": {
+        "title": "Расписание",
+        "week": "{num}-я неделя",
+        "footerCaption": "ну, это конец c:"
+    }
+}

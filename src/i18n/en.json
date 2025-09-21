@@ -1,0 +1,25 @@
+{
+    "Feed": {
+        "chips": {
+            "all": "All",
+            "clubs": "Clubs",
+            "users": "Users",
+            "news": "News",
+            "follows": "Follows"
+        }
+    },
+    "Navbar": {
+        "labels": {
+            "search": "Search",
+            "feed": "Feed",
+            "home": "Home",
+            "follows": "Follows",
+            "profile": "Profile"
+        }
+    },
+    "Schedule": {
+        "title": "Schedule",
+        "week": "Week {num}",
+        "footerCaption": "this is the end c:"
+    }
+}

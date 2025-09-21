@@ -2,6 +2,7 @@
 
 import dayjs, { type Dayjs } from "dayjs";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -26,6 +27,8 @@ export default function Schedule() {
 		group: group,
 	});
 
+	const t = useTranslations("Schedule");
+
 	const currentWeek = dayjs().diff("2025-09-01", "weeks");
 
 	const updateWeek = (diff: 1 | -1) => {
@@ -40,7 +43,7 @@ export default function Schedule() {
 			)}
 		>
 			<div className="flex justify-between border-b px-5 py-5">
-				<h2 className="font-bold text-2xl">Schedule</h2>
+				<h2 className="font-bold text-2xl">{t("title")}</h2>
 				<GroupSelector
 					defaultValue={group}
 					setGroup={(v: string) => setGroup(v)}
@@ -65,7 +68,7 @@ export default function Schedule() {
 							.format("DD.MM")}`}
 					</h4>
 					<p className="text-muted-foreground text-xs">
-						Week {((currentWeek + 1) % 2) + 1}
+						{t("week", { num: ((currentWeek + 1) % 2) + 1 })}
 					</p>
 				</div>
 				<Button
@@ -96,7 +99,7 @@ export default function Schedule() {
 					<DaySkeleton />
 				</div>
 			)}
-			<p className="text-center text-muted-foreground">this is the end c:</p>
+			<p className="text-center text-muted-foreground">{t("footerCaption")}</p>
 		</div>
 	);
 }
