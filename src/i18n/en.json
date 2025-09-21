@@ -16,5 +16,10 @@
             "follows": "Follows",
             "profile": "Profile"
         }
+    },
+    "Schedule": {
+        "title": "Schedule",
+        "week": "Week {num}",
+        "footerCaption": "this is the end c:"
     }
 }
