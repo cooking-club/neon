@@ -1,0 +1,11 @@
+{
+    "Feed": {
+        "chips": {
+            "all": "All",
+            "clubs": "Clubs",
+            "users": "Users",
+            "news": "News",
+            "follows": "Follows"
+        }
+    }
+}

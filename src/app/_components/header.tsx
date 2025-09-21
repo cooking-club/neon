@@ -1,7 +1,15 @@
+import { useTranslations } from "next-intl";
 import { Button } from "~/components/ui/button";
 
 export function Header() {
-	const filters = ["All", "Clubs", "Users", "News", "Follows"];
+	const t = useTranslations("Feed");
+	const filters = [
+		t("chips.all"),
+		t("chips.clubs"),
+		t("chips.users"),
+		t("chips.news"),
+		t("chips.follows"),
+	];
 
 	return (
 		<div className="sticky top-0 z-10 border-b bg-background pb-2">
