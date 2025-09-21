@@ -6,6 +6,7 @@ import { Geist } from "next/font/google";
 import { NavBar } from "~/app/_components/navbar";
 import { TRPCReactProvider } from "~/trpc/react";
 import { ThemeProvider } from "next-themes";
+import { NextIntlClientProvider } from "next-intl";
 
 export const metadata: Metadata = {
 	title: "Neon 0.1",
@@ -32,8 +33,10 @@ export default function RootLayout({
 				>
 					<div className="bg-background text-foreground">
 						<TRPCReactProvider>
-							{children}
-							<NavBar />
+							<NextIntlClientProvider>
+								{children}
+								<NavBar />
+							</NextIntlClientProvider>
 						</TRPCReactProvider>
 					</div>
 				</ThemeProvider>
