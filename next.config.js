@@ -20,6 +20,10 @@ const withSerwist = withSerwistInit({
 			url: "/",
 			revision: "root",
 		},
+		{
+			url: "/schedule",
+			revision: "v1",
+		},
 	],
 });
 

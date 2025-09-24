@@ -23,7 +23,7 @@ export default function Schedule() {
 	const [currentDate, setDate] = useState<Dayjs>(dayjs());
 	const [group, setGroup] = useState<string>("1");
 	const query = api.schedule.get.useQuery({
-		date: currentDate.unix(),
+		date: currentDate.startOf("week").unix(),
 		group: group,
 	});
 
