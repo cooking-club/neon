@@ -4,9 +4,23 @@
  */
 import "./src/env.js";
 import createNextIntlPlugin from "next-intl/plugin";
+import withSerwistInit from "@serwist/next";
 
 /** @type {import("next").NextConfig} */
 const config = {};
 
 const withNextIntl = createNextIntlPlugin();
-export default withNextIntl(config);
+
+const withSerwist = withSerwistInit({
+	swSrc: "src/app/sw.ts",
+	swDest: "public/sw.js",
+	cacheOnNavigation: true,
+	additionalPrecacheEntries: [
+		{
+			url: "/",
+			revision: "root",
+		},
+	],
+});
+
+export default withSerwist(withNextIntl(config));
