@@ -33,7 +33,16 @@ model Post {
     updatedAt DateTime?
 
     author      String
-    attachments String? @db.Text
+    attachments String?    @db.Text
+    reactions   Reaction[]
+}
+
+model Reaction {
+    id     Int  @id @default(autoincrement())
+    post   Post @relation(fields: [postId], references: [id])
+    postId Int
+    count  Int
+    kind   Int
 }
 
 // Necessary for Next auth
