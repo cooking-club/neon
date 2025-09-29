@@ -47,6 +47,15 @@ export const postRouter = createTRPCRouter({
 				orderBy: { id: "desc" },
 				take: input.limit,
 				skip: input.skip,
+				include: {
+					reactions: {
+						select: {
+							id: true,
+							count: true,
+							kind: true,
+						},
+					},
+				},
 			});
 
 			return posts;

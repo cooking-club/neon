@@ -13,6 +13,11 @@ interface IPost {
 	author: string;
 	createdAt: Date;
 	attachments: string | null;
+	reactions: {
+		id: number;
+		kind: number;
+		count: number;
+	}[];
 }
 
 const intersectionOpts = {
