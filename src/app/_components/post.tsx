@@ -97,12 +97,25 @@ export function Post({ text, author, createdAt, attachments }: PostProps) {
 			<p className="my-2 line-clamp-3">{text}</p>
 			{attachments ? (
 				<>
-					<div
-						className="aspect-square rounded bg-center bg-cover"
-						style={{ backgroundImage: `url(${attachments})` }}
-						onClick={() => setImgOpen(true)}
-						onKeyDown={() => setImgOpen(true)}
-					/>
+					{attachments.endsWith("mp4") ? (
+						<video
+							className="aspect-square w-full rounded object-cover object-center"
+							loop
+							autoPlay
+							muted
+							playsInline
+						>
+							<source src={attachments} type="video/mp4" />
+						</video>
+					) : (
+						<img
+							className="aspect-square w-full rounded object-cover object-center"
+							alt=""
+							src={attachments}
+							onClick={() => setImgOpen(true)}
+							onKeyDown={() => setImgOpen(true)}
+						/>
+					)}
 					{imgOpen && (
 						<div
 							className="fixed top-0 left-0 z-10 grid h-screen w-screen items-center bg-background-overlay"
