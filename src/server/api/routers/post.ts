@@ -27,7 +27,7 @@ export const postRouter = createTRPCRouter({
 				const fileName = `${input.author.replace(" ", "-")}/${input.timestamp}-${path.basename(fileURL)}`; // todo: replace author with id
 
 				await ctx.files.putObject(env.MINIO_PUBLIC_BUCKET, fileName, buffer); // todo: add meta data
-				attachments = `http://${env.MINIO_ENDPOINT}:${env.MINIO_PORT}/${env.MINIO_PUBLIC_BUCKET}/${fileName}`; // todo: remake this part without relaying on host/port thing
+				attachments = `${env.MINIO_PUBLIC_BUCKET}/${fileName}`;
 			}
 
 			return ctx.db.post.create({
@@ -43,20 +43,29 @@ export const postRouter = createTRPCRouter({
 	get: publicProcedure
 		.input(z.object({ limit: z.number(), skip: z.number() }))
 		.query(async ({ ctx, input }) => {
-			const posts = await ctx.db.post.findMany({
-				orderBy: { id: "desc" },
-				take: input.limit,
-				skip: input.skip,
-				include: {
-					reactions: {
-						select: {
-							id: true,
-							count: true,
-							kind: true,
+			const posts = (
+				await ctx.db.post.findMany({
+					orderBy: { id: "desc" },
+					take: input.limit,
+					skip: input.skip,
+					include: {
+						reactions: {
+							select: {
+								id: true,
+								count: true,
+								kind: true,
+							},
 						},
 					},
-				},
-			});
+				})
+			).map((item) =>
+				item.attachments
+					? {
+							...item,
+							attachments: `http://${env.MINIO_ENDPOINT}:${env.MINIO_PORT}/${item.attachments}`, // todo: remake this part without relaying on host/port thing
+						}
+					: item,
+			);
 
 			return posts;
 		}),
