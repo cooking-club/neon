@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { SmilePlus } from "lucide-react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import {
@@ -13,6 +13,7 @@ import {
 	PopoverTrigger,
 } from "~/components/ui/popover";
 import { cn } from "~/lib/utils";
+import { api } from "~/trpc/react";
 
 dayjs.extend(relativeTime);
 
@@ -21,6 +22,12 @@ interface PostProps {
 	author: string;
 	createdAt: Date;
 	attachments: string | null; // todo: add media types
+	reactions: {
+		id: number;
+		kind: number;
+		count: number;
+	}[];
+	id: number;
 }
 
 type ReactionInfoType = {
@@ -42,38 +49,55 @@ const defaultReactions: ReactionInfoType[] = [
 
 type ReactionItemType = {
 	id: number;
+	kind: number;
 	count: number;
 	active: boolean;
 };
 
-export function Post({ text, author, createdAt, attachments }: PostProps) {
+export function Post({
+	text,
+	author,
+	createdAt,
+	attachments,
+	reactions: initReactions,
+	id: postId,
+}: PostProps) {
 	const [imgOpen, setImgOpen] = useState(false);
-	const [reactions, setReactions] = useState<ReactionItemType[]>([]);
-
-	const available = useMemo(
-		() =>
-			defaultReactions
-				.map((_, idx) => idx)
-				.filter((id) => !reactions.some((v) => v.id === id)),
-		[reactions],
+	const [reactions, setReactions] = useState<ReactionItemType[]>(
+		initReactions.map((item) => ({ ...item, active: false })),
 	);
 
-	const addReaction = (id: number) =>
-		setReactions((r) => [...r, { id: id, count: 1, active: true }]);
+	const available = useMemo(() => {
+		return defaultReactions
+			.map((_, idx) => idx)
+			.filter((kind) => !reactions.some((v) => v.kind === kind));
+	}, [reactions]);
 
-	const updReaction = (id: number) => {
+	const updReact = (id: number, d: 1 | -1) =>
 		setReactions((r) =>
 			r.map((item) =>
 				item.id === id
 					? {
-							id: item.id,
-							count: item.count + (item.active ? -1 : 1),
+							...item,
+							count: item.count + d,
 							active: !item.active,
 						}
 					: item,
 			),
 		);
-	};
+
+	const newReact = api.reaction.new.useMutation({
+		onSuccess: ({ id, kind }) =>
+			setReactions((r) => [...r, { id, count: 1, active: true, kind: kind }]),
+	});
+
+	const addReact = api.reaction.add.useMutation({
+		onSuccess: ({ id }) => updReact(id, 1),
+	});
+
+	const delReact = api.reaction.remove.useMutation({
+		onSuccess: ({ id }) => updReact(id, -1),
+	});
 
 	return (
 		<div className="mx-3 mt-3 rounded-xl border px-3 py-3">
@@ -97,12 +121,25 @@ export function Post({ text, author, createdAt, attachments }: PostProps) {
 			<p className="my-2 line-clamp-3">{text}</p>
 			{attachments ? (
 				<>
-					<div
-						className="aspect-square rounded bg-center bg-cover"
-						style={{ backgroundImage: `url(${attachments})` }}
-						onClick={() => setImgOpen(true)}
-						onKeyDown={() => setImgOpen(true)}
-					/>
+					{attachments.endsWith("mp4") ? (
+						<video
+							className="aspect-square w-full rounded object-cover object-center"
+							loop
+							autoPlay
+							muted
+							playsInline
+						>
+							<source src={attachments} type="video/mp4" />
+						</video>
+					) : (
+						<img
+							className="aspect-square w-full rounded object-cover object-center"
+							alt=""
+							src={attachments}
+							onClick={() => setImgOpen(true)}
+							onKeyDown={() => setImgOpen(true)}
+						/>
+					)}
 					{imgOpen && (
 						<div
 							className="fixed top-0 left-0 z-10 grid h-screen w-screen items-center bg-background-overlay"
@@ -115,15 +152,24 @@ export function Post({ text, author, createdAt, attachments }: PostProps) {
 				</>
 			) : null}
 			<div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-2 overflow-y-hidden">
-				{reactions.map((item, idx) => (
+				{reactions.map((item) => (
 					<Reaction
 						{...item}
 						key={item.id}
-						incCount={() => updReaction(item.id)}
+						onClick={() => {
+							if (item.active) {
+								delReact.mutate({ id: item.id });
+							} else {
+								addReact.mutate({ id: item.id });
+							}
+						}}
 					/>
 				))}
 				{reactions.length !== defaultReactions.length && (
-					<AddReactionButton addReaction={addReaction} available={available} />
+					<AddReactionButton
+						addReaction={(kind: number) => newReact.mutate({ postId, kind })}
+						available={available}
+					/>
 				)}
 			</div>
 		</div>
@@ -133,12 +179,11 @@ export function Post({ text, author, createdAt, attachments }: PostProps) {
 interface ReactionProps {
 	active: boolean;
 	count: number;
-	id: number;
-	incCount(): void;
+	kind: number;
+	onClick(): void;
 }
 
-function Reaction({ active, count, incCount, id }: ReactionProps) {
-	console.log("active", active, id);
+function Reaction({ active, count, onClick, kind }: ReactionProps) {
 	return (
 		<button
 			type="button"
@@ -146,11 +191,11 @@ function Reaction({ active, count, incCount, id }: ReactionProps) {
 				"flex items-center gap-2 rounded-full border bg-background px-4 py-2 leading-none",
 				active && "bg-accent",
 			)}
-			onClick={() => incCount()}
+			onClick={onClick}
 		>
 			<Image
-				src={defaultReactions[id]!.icon}
-				alt={defaultReactions[id]!.alt}
+				src={defaultReactions[kind]!.icon}
+				alt={defaultReactions[kind]!.alt}
 				width={20}
 				height={20}
 			/>

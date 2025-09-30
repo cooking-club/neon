@@ -21,5 +21,11 @@
         "title": "Schedule",
         "week": "Week {num}",
         "footerCaption": "this is the end c:"
+    },
+    "Home": {
+        "title": "Home",
+        "schedule": {
+            "label": "Schedule"
+        }
     }
 }
