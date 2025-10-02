@@ -18,10 +18,14 @@ const withSerwist = withSerwistInit({
 	additionalPrecacheEntries: [
 		{
 			url: "/",
-			revision: "root",
+			revision: "v1",
 		},
 		{
 			url: "/schedule",
+			revision: "v1",
+		},
+		{
+			url: "/home",
 			revision: "v1",
 		},
 	],
