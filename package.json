@@ -56,6 +56,7 @@
 		"@types/node": "^20.14.10",
 		"@types/react": "^19.0.0",
 		"@types/react-dom": "^19.0.0",
+		"eruda": "^3.4.3",
 		"postcss": "^8.5.3",
 		"prisma": "^6.5.0",
 		"serwist": "^9.2.1",

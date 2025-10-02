@@ -7,6 +7,8 @@ import { NavBar } from "~/app/_components/navbar";
 import { TRPCReactProvider } from "~/trpc/react";
 import { ThemeProvider } from "next-themes";
 import { NextIntlClientProvider } from "next-intl";
+import { env } from "~/env";
+import { ErudaContainer } from "~/components/eruda";
 
 export const metadata: Metadata = {
 	title: "Neon v0.1",
@@ -62,6 +64,7 @@ export default function RootLayout({
 						<TRPCReactProvider>
 							<NextIntlClientProvider>
 								{children}
+								{env.NODE_ENV === "development" && <ErudaContainer />}
 								<NavBar />
 							</NextIntlClientProvider>
 						</TRPCReactProvider>
