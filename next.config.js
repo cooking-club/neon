@@ -7,7 +7,9 @@ import createNextIntlPlugin from "next-intl/plugin";
 import withSerwistInit from "@serwist/next";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+	htmlLimitedBots: /.*/,
+};
 
 const withNextIntl = createNextIntlPlugin();
 
