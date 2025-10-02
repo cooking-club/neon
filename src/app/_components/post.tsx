@@ -132,13 +132,15 @@ export function Post({
 							<source src={attachments} type="video/mp4" />
 						</video>
 					) : (
-						<img
-							className="aspect-square w-full rounded object-cover object-center"
-							alt=""
-							src={attachments}
-							onClick={() => setImgOpen(true)}
-							onKeyDown={() => setImgOpen(true)}
-						/>
+						<div className="relative aspect-square w-full overflow-hidden rounded object-cover object-center">
+							<Image
+								alt=""
+								fill={true}
+								src={attachments}
+								onClick={() => setImgOpen(true)}
+								onKeyDown={() => setImgOpen(true)}
+							/>
+						</div>
 					)}
 					{imgOpen && (
 						<div
@@ -146,7 +148,7 @@ export function Post({
 							onClick={() => setImgOpen(false)}
 							onKeyDown={() => setImgOpen(false)}
 						>
-							<img className="" src={attachments} alt="" />
+							<Image src={attachments} alt="" width={500} height={500} />
 						</div>
 					)}
 				</>

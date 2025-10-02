@@ -62,7 +62,7 @@ export const postRouter = createTRPCRouter({
 				item.attachments
 					? {
 							...item,
-							attachments: `http://${env.MINIO_ENDPOINT}:${env.MINIO_PORT}/${item.attachments}`, // todo: remake this part without relaying on host/port thing
+							attachments: `/file/${item.attachments}`, // todo: remake this part without relaying on host/port thing
 						}
 					: item,
 			);
