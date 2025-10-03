@@ -9,6 +9,7 @@ import withSerwistInit from "@serwist/next";
 /** @type {import("next").NextConfig} */
 const config = {
 	htmlLimitedBots: /.*/,
+	output: "standalone",
 };
 
 const withNextIntl = createNextIntlPlugin();

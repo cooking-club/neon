@@ -1,0 +1,35 @@
+name: neon
+
+services:
+  app:
+    build: .
+    depends_on:
+      - db
+      - minio
+    ports:
+      - 3000:3000
+    environment:
+      MINIO_ENDPOINT: minio
+      DATABASE_URL: $DB_URL
+      RECIPES_API_URL: $RECIPES_URL
+      MINIO_ACCESS_KEY: $MINIO_AKEY
+      MINIO_SECRET_KEY: $MINIO_SKEY
+  db:
+    image: mysql:lts
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: $DB_PASSWD
+    secrets:
+      - mysql_passwd
+  minio:
+    image: minio
+    restart: always
+    volumes:
+      - media-data:/data
+    command:
+      - server /data --console-address ":9001"
+    ports:
+      - 9001:9001
+
+volumes:
+  media-data:
